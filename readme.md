@@ -121,8 +121,13 @@ http://localhost:8080
 ---
 ## 🔹 Capturas
 
+### **Registro**
 ![Pantalla de registro](images/register.png)
+---
+### **Login**
 ![Pantalla de login](images/login.png)
+---
+### **Notas**
 ![Pantalla de notas](images/notes.png)
 
 ---
