@@ -1,4 +1,4 @@
-# Notas Seguras
+# Notas Privadas Seguras
 
 Aplicación de notas seguras desarrollada en **Spring Boot**, con registro, login y CRUD de notas.  
 Incluye validaciones, hashing de contraseñas y control de sesiones.
@@ -20,7 +20,7 @@ Incluye validaciones, hashing de contraseñas y control de sesiones.
 1. Clonar el repositorio:
 
 ```bash
-git clone https://github.com/TU_USUARIO/notas-seguras.git
+git clone https://github.com/Sabogal22/notas-seguras.git
 cd notas-seguras
 ```
 
@@ -140,5 +140,5 @@ Solo coloca las imágenes en la carpeta `images` del proyecto y agrega el markdo
 
 ### ✅ Autor
 
-**Neythan Sabogal Gaitán**
+**Neythan Sabogal Gaitan**
 

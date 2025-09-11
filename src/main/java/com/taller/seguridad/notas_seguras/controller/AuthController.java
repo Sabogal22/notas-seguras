@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Optional;
 
 @RestController
@@ -29,8 +30,9 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if(user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");
+        // Asignar rol por defecto si no existe
+        if(user.getRole() == null) {
+            user.setRole(User.Role.USER);
         }
 
         userRepository.save(user);
@@ -67,16 +69,16 @@ public class AuthController {
             return ResponseEntity.status(401).body("No autenticado");
         }
 
-        // Devuelve solo campos importantes (puedes quitar password si quieres)
+        // Devuelve solo campos importantes (sin password)
         return ResponseEntity.ok(new UserDTO(user.getEmail(), user.getRole()));
     }
 
     // DTO para no exponer password
     public static class UserDTO {
         private String email;
-        private String role;
+        private User.Role role;
 
-        public UserDTO(String email, String role) {
+        public UserDTO(String email, User.Role role) {
             this.email = email;
             this.role = role;
         }
@@ -85,7 +87,7 @@ public class AuthController {
             return email;
         }
 
-        public String getRole() {
+        public User.Role getRole() {
             return role;
         }
     }
