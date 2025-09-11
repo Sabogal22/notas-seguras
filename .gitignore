@@ -1,0 +1,43 @@
+# Maven target
+/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### Eclipse / STS ###
+.classpath
+.project
+.settings
+.factorypath
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+
+# Package files
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.rar
+
+# VM crash logs
+hs_err_pid*
+replay_pid*
