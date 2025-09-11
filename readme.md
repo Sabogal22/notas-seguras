@@ -119,22 +119,11 @@ http://localhost:8080
 - Se recomienda crear una base de datos persistente para producción (ahora usa H2 en memoria).  
 
 ---
+## 🔹 Capturas
 
-## 🔹 Capturas (opcional)
-
-Si quieres, puedes agregar imágenes de Postman para mostrar que los endpoints funcionan:
-
-- Registro: `images/register.png`
-- Login: `images/login.png`
-- Notas: `images/notes.png`
-
-Solo coloca las imágenes en la carpeta `images` del proyecto y agrega el markdown:
-
-```markdown
-![Registro](images/register.png)
-![Login](images/login.png)
-![Notas](images/notes.png)
-```
+![Pantalla de registro](images/register.png)
+![Pantalla de login](images/login.png)
+![Pantalla de notas](images/notes.png)
 
 ---
 
