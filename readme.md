@@ -54,8 +54,8 @@ http://localhost:8080
 
 ```json
 {
-  "email": "usuario@demo.com",
-  "password": "Password123"
+  "email": "user@demo.com",
+  "password": "P4ssw0rd+Larga"
 }
 ```
 
@@ -91,10 +91,10 @@ http://localhost:8080
 
 ## 🔹 Usuarios de demo
 
-| Email | Password | Rol |
-|-------|----------|-----|
-| demo1@example.com | Password123 | USER |
-| demo2@example.com | Password123 | USER |
+| Email          | Password | Rol   |
+|----------------|----------|-------|
+| user@demo.com  | P4ssw0rd+Larga | USER  |
+| admin@demo.com | P4ssw0rd+Larga | ADMIN |
 
 > Antes de probar con Postman, primero registra el usuario mediante `/auth/register`.
 

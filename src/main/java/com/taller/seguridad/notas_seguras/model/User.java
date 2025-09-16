@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -32,16 +34,57 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    private int failedAttempts = 0; // intentos fallidos de login
+    // Control de intentos fallidos y bloqueo
+    private int failedAttempts = 0;
 
-    private boolean locked = false; // bloqueo por intentos fallidos
+    private boolean locked = false; // bloqueo manual o permanente
+
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime; // bloqueo temporal
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin; // auditoría (opcional)
 
     // Enum de roles
     public enum Role {
         USER, ADMIN
     }
 
-    // Getters y Setters
+    // --- Métodos de ayuda para login ---
+
+    public void incrementFailedAttempts() {
+        this.failedAttempts++;
+    }
+
+    public void resetFailedAttempts() {
+        this.failedAttempts = 0;
+    }
+
+    public void lock() {
+        this.locked = true;
+        this.lockTime = LocalDateTime.now();
+    }
+
+    /**
+     * Verifica si el tiempo de bloqueo ya expiró
+     */
+    public boolean isLockTimeExpired() {
+        if (this.lockTime == null) return false;
+        return this.lockTime.plusMinutes(LOCK_TIME_DURATION).isBefore(LocalDateTime.now());
+    }
+
+    /**
+     * Desbloquea al usuario si ya expiró el tiempo de bloqueo
+     */
+    public void unlockIfLockTimeExpired() {
+        if (isLocked() && isLockTimeExpired()) {
+            this.locked = false;
+            this.lockTime = null;
+            this.failedAttempts = 0;
+        }
+    }
+
+    // --- Getters y Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -59,4 +102,14 @@ public class User {
 
     public boolean isLocked() { return locked; }
     public void setLocked(boolean locked) { this.locked = locked; }
+
+    public LocalDateTime getLockTime() { return lockTime; }
+    public void setLockTime(LocalDateTime lockTime) { this.lockTime = lockTime; }
+
+    public LocalDateTime getLastLogin() { return lastLogin; }
+    public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
+
+    // --- Constantes de seguridad ---
+    public static final int MAX_FAILED_ATTEMPTS = 3; // intentos máximos
+    public static final int LOCK_TIME_DURATION = 15; // minutos de bloqueo temporal
 }
