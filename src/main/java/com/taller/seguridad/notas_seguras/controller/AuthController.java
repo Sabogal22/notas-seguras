@@ -2,6 +2,7 @@ package com.taller.seguridad.notas_seguras.controller;
 
 import com.taller.seguridad.notas_seguras.model.User;
 import com.taller.seguridad.notas_seguras.repository.UserRepository;
+import com.taller.seguridad.notas_seguras.security.JwtService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,11 +27,10 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Control de intentos fallidos
-    private final Map<String, Integer> attempts = new ConcurrentHashMap<>();
-    private final Map<String, LocalDateTime> lockoutUntil = new ConcurrentHashMap<>();
+    @Autowired
+    private JwtService jwtService;
 
-    // DTO para el registro (validación fuerte)
+    // --- DTO para el registro ---
     public static class RegisterRequest {
         @Email
         private String email;
@@ -45,7 +44,6 @@ public class AuthController {
 
         private boolean admin;
 
-        // getters y setters
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
         public String getPassword() { return password; }
@@ -54,7 +52,7 @@ public class AuthController {
         public void setAdmin(boolean admin) { this.admin = admin; }
     }
 
-    // DTO para respuesta de usuario
+    // --- DTO para respuesta del perfil ---
     public static class UserDTO {
         private String email;
         private User.Role role;
@@ -68,7 +66,7 @@ public class AuthController {
         public User.Role getRole() { return role; }
     }
 
-    // Registro
+    // --- Registro ---
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
@@ -79,16 +77,19 @@ public class AuthController {
         user.setEmail(req.getEmail());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setRole(req.isAdmin() ? User.Role.ADMIN : User.Role.USER);
+        user.setFailedAttempts(0);
+        user.setLocked(false);
+        user.setLockTime(null);
 
         userRepository.save(user);
         return ResponseEntity.ok("Usuario registrado correctamente");
     }
 
-    // Login
+    // --- Login con bloqueo y JWT ---
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username,
-                                        @RequestParam String password,
-                                        HttpSession session) {
+    public ResponseEntity<?> login(@RequestParam String username,
+                                   @RequestParam String password,
+                                   HttpSession session) {
         Optional<User> userOpt = userRepository.findByEmail(username);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(401).body("Usuario no encontrado");
@@ -96,10 +97,9 @@ public class AuthController {
 
         User user = userOpt.get();
 
-        // Si está bloqueado, verificamos si pasaron 15 minutos
+        // Si el usuario está bloqueado verificamos el tiempo
         if (user.isLocked()) {
             if (user.getLockTime() != null && user.getLockTime().plusMinutes(15).isBefore(LocalDateTime.now())) {
-                // desbloqueamos
                 user.setLocked(false);
                 user.setFailedAttempts(0);
                 user.setLockTime(null);
@@ -109,8 +109,8 @@ public class AuthController {
             }
         }
 
+        // Validar contraseña
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            // intento fallido
             user.setFailedAttempts(user.getFailedAttempts() + 1);
 
             if (user.getFailedAttempts() >= 5) {
@@ -124,43 +124,40 @@ public class AuthController {
             return ResponseEntity.status(401).body("Contraseña incorrecta. Intentos fallidos: " + user.getFailedAttempts());
         }
 
-        // login exitoso → reiniciamos intentos
+        // Login exitoso
         user.setFailedAttempts(0);
-        user.setLockTime(null);
         user.setLocked(false);
+        user.setLockTime(null);
         userRepository.save(user);
 
         session.setAttribute("user", user);
 
-        return ResponseEntity.ok("Login exitoso");
+        // Generar token JWT
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Login exitoso",
+                "token", token,
+                "role", user.getRole()
+        ));
     }
 
-    // Perfil del usuario logueado (/auth/me)
+    // --- Perfil del usuario logueado ---
     @GetMapping("/me")
-    public ResponseEntity<?> profile(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(401).body("No autenticado");
+    public ResponseEntity<?> profile(@RequestHeader(value = "Authorization", required = false) String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Token no proporcionado");
         }
-        return ResponseEntity.ok(new UserDTO(user.getEmail(), user.getRole()));
-    }
 
-    // --- Métodos de lockout ---
-    private boolean isLocked(String email) {
-        LocalDateTime until = lockoutUntil.get(email);
-        return until != null && until.isAfter(LocalDateTime.now());
-    }
-
-    private void loginFailed(String email) {
-        int newAttempts = attempts.getOrDefault(email, 0) + 1;
-        attempts.put(email, newAttempts);
-        if (newAttempts >= 5) {
-            lockoutUntil.put(email, LocalDateTime.now().plusMinutes(15));
+        String token = header.substring(7);
+        try {
+            var claims = jwtService.validateToken(token);
+            String email = claims.getBody().getSubject();
+            String role = (String) claims.getBody().get("role");
+            return ResponseEntity.ok(Map.of("email", email, "role", role));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Token inválido o expirado");
         }
     }
 
-    private void loginSucceeded(String email) {
-        attempts.remove(email);
-        lockoutUntil.remove(email);
-    }
 }
