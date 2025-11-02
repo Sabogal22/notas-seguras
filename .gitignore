@@ -1,4 +1,4 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
 /dist
@@ -19,25 +19,39 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
-
-# Visual Studio Code
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
+.history/
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
+# Angular-specific
+.angular/cache
+.angular/analytics
+.angular/browsers
+.angular/builders
+.angular/cli
+.angular/compiler
+.angular/core
+.angular/devkit
+.angular/elements
+.angular/forms
+.angular/http
+.angular/language-service
+.angular/material
+.angular/platform-browser
+.angular/platform-browser-dynamic
+.angular/platform-server
+.angular/router
+.angular/service-worker
+.angular/universal
 
-# System files
+# Other
+coverage/
+*.log
+*.bak
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
