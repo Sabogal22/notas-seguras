@@ -2,12 +2,13 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors  } from '@angular/common/http';
+import { authInterceptor } from './interceptors/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     importProvidersFrom(ReactiveFormsModule),
-    provideHttpClient() // 👈 habilita peticiones HTTP
-  ]
+    provideHttpClient(withInterceptors([authInterceptor])), // 👈 habilita peticiones HTTP
+  ],
 };

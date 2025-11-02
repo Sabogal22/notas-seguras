@@ -1,0 +1,17 @@
+<div class="login-container">
+  <h2>Iniciar sesión</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <label>Correo electrónico</label>
+    <input type="email" formControlName="username" placeholder="Correo" />
+
+    <label>Contraseña</label>
+    <input type="password" formControlName="password" placeholder="Contraseña" />
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Iniciando...' : 'Entrar' }}
+    </button>
+  </form>
+
+  <p class="message">{{ message }}</p>
+</div>
