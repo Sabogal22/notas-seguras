@@ -1,17 +1,37 @@
-<div class="login-container">
-  <h2>Iniciar sesión</h2>
+<div class="page-bg">
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">📝</div>
+      <h1>Notas Seguras</h1>
+      <p class="tag">Tus notas, privadas y bonitas</p>
+    </div>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <label>Correo electrónico</label>
-    <input type="email" formControlName="username" placeholder="Correo" />
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <label class="field">
+        <span class="label-text">Correo electrónico</span>
+        <div class="input-wrap">
+          <input type="email" formControlName="username" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+        </div>
+      </label>
 
-    <label>Contraseña</label>
-    <input type="password" formControlName="password" placeholder="Contraseña" />
+      <label class="field">
+        <span class="label-text">Contraseña</span>
+        <div class="input-wrap">
+          <input type="password" formControlName="password" placeholder="Contraseña" autocomplete="current-password" />
+        </div>
+      </label>
 
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Iniciando...' : 'Entrar' }}
-    </button>
-  </form>
+      <div class="actions">
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? 'Iniciando...' : 'Entrar' }}
+        </button>
+      </div>
+    </form>
 
-  <p class="message">{{ message }}</p>
+    <p class="message" [class.error]="message && message.includes('error')">{{ message }}</p>
+
+    <footer class="card-footer">
+      <p>¿Nuevo? <a class="link" href="#">Crear cuenta</a></p>
+    </footer>
+  </div>
 </div>
