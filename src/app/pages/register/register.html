@@ -1,15 +1,37 @@
-<div class="container">
-  <h2>Registro de usuario</h2>
+<div class="page-bg">
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">📝</div>
+      <h1>Notas Seguras</h1>
+      <p class="tag">Crea tu cuenta y guarda tus ideas</p>
+    </div>
 
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <label>Email</label>
-    <input formControlName="email" type="email" placeholder="Correo electrónico" />
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <label class="field">
+        <span class="label-text">Correo electrónico</span>
+        <div class="input-wrap">
+          <input type="email" formControlName="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+        </div>
+      </label>
 
-    <label>Contraseña</label>
-    <input formControlName="password" type="password" placeholder="Contraseña" />
+      <label class="field">
+        <span class="label-text">Contraseña</span>
+        <div class="input-wrap">
+          <input type="password" formControlName="password" placeholder="Contraseña (mínimo 6 caracteres)" />
+        </div>
+      </label>
 
-    <button type="submit">Registrarse</button>
+      <div class="actions">
+        <button type="submit" class="btn-primary">
+          Registrarse
+        </button>
+      </div>
+    </form>
 
-    <p *ngIf="message">{{ message }}</p>
-  </form>
+    <p class="message" *ngIf="message">{{ message }}</p>
+
+    <footer class="card-footer">
+      <p>¿Ya tienes cuenta? <a class="link" href="/login">Iniciar sesión</a></p>
+    </footer>
+  </div>
 </div>
