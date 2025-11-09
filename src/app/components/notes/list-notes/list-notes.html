@@ -4,7 +4,25 @@
   <h4>{{ note.title }}</h4>
   <p>{{ note.content }}</p>
   <div class="actions">
-    <button class="edit">Editar</button>
-    <button class="delete">Eliminar</button>
+    <button class="edit" (click)="openEditModal(note)">Editar</button>
+    <button class="delete" (click)="deleteNote(note)">Eliminar</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="showModal && selectedNote">
+  <div class="modal-content">
+    <h3>Editar Nota</h3>
+    
+    <label>Título</label>
+    <input [(ngModel)]="selectedNote.title" type="text" />
+    
+    <label>Contenido</label>
+    <textarea [(ngModel)]="selectedNote.content"></textarea>
+    
+    <div class="modal-actions">
+      <button (click)="saveChanges()">Guardar</button>
+      <button class="cancel" (click)="closeModal()">Cancelar</button>
+    </div>
   </div>
 </div>
