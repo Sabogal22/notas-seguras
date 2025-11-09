@@ -1,0 +1,24 @@
+<div class="dashboard-container">
+  <header class="navbar">
+    <div class="left">
+      <h2>Notas Seguras</h2>
+    </div>
+
+    <div class="right">
+      <span class="username">{{ userName }}</span>
+      <button class="logout-btn" (click)="logout()">Cerrar Sesion</button>
+    </div>
+  </header>
+
+  <!-- Contenido Dividido -->
+  <main class="content">
+    <!-- Formulario de nueva Nota -->
+    <aside class="note-form">
+      <app-add-note></app-add-note>
+    </aside>
+    <!-- Listado de notas -->
+    <section class="notes-list">
+      <app-list-notes></app-list-notes>
+    </section>
+  </main>
+</div>

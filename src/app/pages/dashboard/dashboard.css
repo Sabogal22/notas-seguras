@@ -1,0 +1,97 @@
+:root {
+  --bg: #f6f9ff;
+  --card: #fff;
+  --accent: #5b8def;
+  --accent-dark: #0f1724;
+  --text: #0f1724;
+  --muted: #6b7280;
+  --radius: 14px;
+}
+
+/* Generales */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  color: var(--text);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.username {
+  margin-right: 14px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: white;
+  color: var(--accent-dark);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: var(--accent-dark);
+  color: white;
+}
+
+/* Contenido */
+.content {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1.6fr 1fr;
+  padding: 24px;
+  gap: 24px;
+}
+
+/* Panel de notas */
+.notes-list {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+}
+
+/* Panel del formulario */
+.note-form {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+/* Reponsivo */
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .note-form {
+    position: relative;
+    top: 0;
+  }
+}
