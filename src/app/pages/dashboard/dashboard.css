@@ -1,96 +1,314 @@
 :root {
-  --bg: #f6f9ff;
-  --card: #fff;
-  --accent: #5b8def;
-  --accent-dark: #0f1724;
-  --text: #0f1724;
-  --muted: #6b7280;
-  --radius: 14px;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --accent: #4f46e5;
+  --accent-light: #6366f1;
+  --accent-dark: #3730a3;
+  --text: #0f172a;
+  --text-light: #64748b;
+  --muted: #94a3b8;
+  --border: #e2e8f0;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
 }
 
 /* Generales */
+* {
+  box-sizing: border-box;
+}
+
 .dashboard-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background-color: var(--bg);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  overflow: hidden;
 }
 
-/* Navbar */
+/* Navbar Mejorada */
 .navbar {
-  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
-  color: var(--text);
-  padding: 14px 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  padding: 0 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 70px;
 }
 
-.navbar h1 {
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo svg {
+  color: var(--accent);
+}
+
+.logo h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .username {
-  margin-right: 14px;
   font-weight: 500;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+.user-role {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-role.ADMIN {
+  background: #4f46e5;
+  color: white;
+}
+
+.user-role.USER {
+  background: #64748b;
+  color: white;
 }
 
 .logout-btn {
-  background: white;
-  color: var(--accent-dark);
-  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  color: var(--text-light);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.875rem;
   transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  background: var(--accent-dark);
+  background: #f8fafc;
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.logout-btn svg {
+  color: currentColor;
 }
 
 /* Contenido */
 .content {
   display: grid;
   flex: 1;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 1fr 1.8fr;
   padding: 24px;
   gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Panel Headers */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.notes-count {
+  background: var(--bg);
+  color: var(--text-light);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.header-decoration {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient);
+  border-radius: 2px;
 }
 
 /* Panel de notas */
 .notes-list {
   background: var(--card);
   border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  padding: 24px;
+  box-shadow: var(--shadow);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s ease;
+}
+
+.notes-list:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 /* Panel del formulario */
 .note-form {
   background: var(--card);
   border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  padding: 24px;
+  box-shadow: var(--shadow);
   position: sticky;
-  top: 20px;
+  top: 94px; /* navbar height + padding */
   height: fit-content;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s ease;
 }
 
-/* Reponsivo */
-@media (max-width: 900px) {
+.note-form:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Scrollbar personalizado */
+.notes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notes-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.notes-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.notes-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
   .content {
     grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
   }
 
   .note-form {
     position: relative;
     top: 0;
+  }
+  
+  .navbar-content {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .navbar-content {
+    padding: 0 16px;
+    height: 60px;
+  }
+  
+  .logo h2 {
+    font-size: 1.25rem;
+  }
+  
+  .username {
+    display: none;
+  }
+  
+  .notes-list,
+  .note-form {
+    padding: 20px;
+  }
+}
+
+/* Animaciones suaves */
+.dashboard-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

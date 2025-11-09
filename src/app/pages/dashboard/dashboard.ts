@@ -13,6 +13,8 @@ import { ListNotes } from '../../components/notes/list-notes/list-notes';
 })
 export class Dashboard {
   userName = 'Neythan Sabogal';
+  userRole = 'ADMIN';
+  notesCount = 0;
 
   /* funcion del login */
   /* constructor(private router: Router) {}
@@ -27,5 +29,19 @@ export class Dashboard {
   logout() {
     localStorage.removeItem('token');
     window.location.href = '/login';
+  }
+
+  getUserInitials(): string {
+    if (!this.userName) return 'U';
+    return this.userName
+      .split(' ')
+      .map(name => name[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
+
+  onNotesCountChange(count: number) {
+    this.notesCount = count;
   }
 }
