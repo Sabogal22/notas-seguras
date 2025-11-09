@@ -1,28 +1,96 @@
-<h3>Mis Notas</h3>
-
-<div class="note-card" *ngFor="let note of notes">
-  <h4>{{ note.title }}</h4>
-  <p>{{ note.content }}</p>
-  <div class="actions">
-    <button class="edit" (click)="openEditModal(note)">Editar</button>
-    <button class="delete" (click)="deleteNote(note)">Eliminar</button>
+<div class="notes-container">
+  <!-- Header simple -->
+  <div class="notes-header">
+    <h2>Mis Notas</h2>
+    <span class="notes-count">{{ notes.length }} notas</span>
   </div>
-</div>
 
-<!-- Modal -->
-<div class="modal" *ngIf="showModal && selectedNote">
-  <div class="modal-content">
-    <h3>Editar Nota</h3>
-    
-    <label>Título</label>
-    <input [(ngModel)]="selectedNote.title" type="text" />
-    
-    <label>Contenido</label>
-    <textarea [(ngModel)]="selectedNote.content"></textarea>
-    
-    <div class="modal-actions">
-      <button (click)="saveChanges()">Guardar</button>
-      <button class="cancel" (click)="closeModal()">Cancelar</button>
+  <!-- Lista de notas -->
+  <div class="notes-list">
+    <div class="note-card" *ngFor="let note of notes">
+      <div class="note-header">
+        <h3 class="note-title">{{ note.title }}</h3>
+        <div class="note-actions">
+          <button class="btn-icon edit" (click)="openEditModal(note)" title="Editar nota">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="btn-icon delete" (click)="deleteNote(note)" title="Eliminar nota">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="note-content">
+        <p>{{ note.content }}</p>
+      </div>
+      
+      <div class="note-meta">
+        <span class="note-length">{{ note.content.length }}/500 caracteres</span>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="notes.length === 0">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+          <path d="M19 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM14 17H7V15H14V17ZM17 13H7V11H17V13ZM17 9H7V7H17V9Z" fill="#64748b"/>
+        </svg>
+      </div>
+      <h3>No hay notas aún</h3>
+      <p>Crea tu primera nota para comenzar a organizar tus ideas</p>
+    </div>
+  </div>
+
+  <!-- Modal de edición -->
+  <div class="modal" *ngIf="showModal && selectedNote">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Editar Nota</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#64748b"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="edit-title">Título</label>
+          <input 
+            id="edit-title"
+            [(ngModel)]="selectedNote.title" 
+            type="text" 
+            placeholder="Título de la nota"
+            maxlength="100"
+          />
+          <div class="char-counter">
+            <span>{{ selectedNote.title?.length || 0 }}/100</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-content">Contenido</label>
+          <textarea 
+            id="edit-content"
+            [(ngModel)]="selectedNote.content" 
+            placeholder="Contenido de la nota"
+            maxlength="500"
+          ></textarea>
+          <div class="char-counter">
+            <span>{{ selectedNote.content?.length || 0 }}/500</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-primary" (click)="saveChanges()">Guardar Cambios</button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,21 +9,27 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './list-notes.css',
 })
 export class ListNotes {
+  @Output() notesCountChange = new EventEmitter<number>();
+
   selectedNote: any = null;
   showModal = false;
 
   notes = [
-    { 
+    {
       id: 1,
-      title: 'Primera Nota', 
-      content: 'Esta es una nota de ejemplo con contenido corto.' 
+      title: 'Primera Nota',
+      content: 'Esta es una nota de ejemplo con contenido corto.',
     },
-    { 
+    {
       id: 2,
-      title: 'Segunda Nota', 
-      content: 'Otra nota para ver como se ve el diseño del listado.' 
-    }
-  ]
+      title: 'Segunda Nota',
+      content: 'Otra nota para ver como se ve el diseño del listado.',
+    },
+  ];
+
+  ngOnInit() {
+    this.emitNotesCount();
+  }
 
   openEditModal(note: any) {
     this.selectedNote = { ...note };
@@ -37,18 +43,23 @@ export class ListNotes {
 
   saveChanges() {
     if (!this.selectedNote) return;
-    
-    // Encontrar la nota original y actualizarla
-    const index = this.notes.findIndex(note => note.id === this.selectedNote.id);
+
+    const index = this.notes.findIndex((note) => note.id === this.selectedNote.id);
     if (index !== -1) {
       this.notes[index] = { ...this.selectedNote };
     }
-    
+
     this.closeModal();
+    this.emitNotesCount();
   }
 
   deleteNote(note: any) {
-    // Filtrar el array para eliminar la nota
-    this.notes = this.notes.filter(n => n !== note);
+    this.notes = this.notes.filter((n) => n !== note);
+    this.emitNotesCount();
+  }
+
+  // Nueva función para emitir el conteo
+  private emitNotesCount() {
+    this.notesCountChange.emit(this.notes.length);
   }
 }
