@@ -45,7 +45,7 @@ export class Login implements OnInit {
           localStorage.setItem('token', res.token);
           if (res.role) localStorage.setItem('role', String(res.role));
           this.message = '✅ Login exitoso';
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/dashboard']);
         } else {
           this.message = 'Respuesta inesperada del servidor';
         }
