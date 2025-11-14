@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AddNote } from '../../components/notes/add-note/add-note';
 import { ListNotes } from '../../components/notes/list-notes/list-notes';
-
+import { Auth } from '../../services/auth';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -12,36 +12,46 @@ import { ListNotes } from '../../components/notes/list-notes/list-notes';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  userName = 'Neythan Sabogal';
-  userRole = 'ADMIN';
+  userName = '';
+  userRole = '';
   notesCount = 0;
-
-  /* funcion del login */
-  /* constructor(private router: Router) {}
-
-  ngOnInit () {
+  constructor(private router: Router, private auth: Auth) {}
+  ngOnInit() {
     const token = localStorage.getItem('token');
+    console.log('TOKEN DESDE LOCALSTORAGE:', token);
     if (!token) {
-      this.router.navigate(['/login'])
+      this.router.navigate(['/login']);
+      return;
     }
-  } */
-
+    this.loadUserProfile();
+  }
+  loadUserProfile() {
+    this.auth.me().subscribe({
+      next: (data: any) => {
+        this.userName = data.email;
+        this.userRole = data.role;
+      },
+      error: () => {
+        this.router.navigate(['/login']);
+      },
+    });
+  }
   logout() {
     localStorage.removeItem('token');
     window.location.href = '/login';
   }
-
   getUserInitials(): string {
     if (!this.userName) return 'U';
     return this.userName
       .split(' ')
-      .map(name => name[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .substring(0, 2);
   }
-
   onNotesCountChange(count: number) {
-    this.notesCount = count;
+    setTimeout(() => {
+      this.notesCount = count;
+    }, 0);
   }
 }
