@@ -142,6 +142,19 @@ public class AuthController {
         ));
     }
 
+    // --- Logout ---
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String header,
+                                    HttpSession session) {
+
+        session.invalidate();
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Logout exitoso",
+                "timestamp", LocalDateTime.now()
+        ));
+    }
+
     // --- Perfil del usuario logueado ---
     @GetMapping("/me")
     public ResponseEntity<?> profile(@RequestHeader(value = "Authorization", required = false) String header) {
