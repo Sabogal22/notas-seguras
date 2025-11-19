@@ -34,34 +34,51 @@ export class Login implements OnInit {
     this.loading = true;
     this.message = '';
 
-    // Obtener los valores del formulario
     const username = this.loginForm.value.username;
     const password = this.loginForm.value.password;
 
-    // CORRECCIÓN: Pasar los parámetros individualmente
+    console.log('Intentando login con:', { username, password });
+
     this.auth.login(username, password).subscribe({
       next: (res: any) => {
         this.loading = false;
-        console.log('Respuesta del login:', res);
-        
+        console.log('Respuesta completa del login:', res);
+
         if (res.token) {
-          // Usar el método saveToken del servicio en lugar de localStorage directamente
+          // Verificar que el token se guarde correctamente
+          console.log('Token recibido:', res.token);
           this.auth.saveToken(res.token);
-          if (res.role) {
-            localStorage.setItem('role', String(res.role));
+
+          // VERIFICAR que se guardó correctamente
+          const savedToken = this.auth.getToken();
+          console.log('Token guardado en localStorage:', savedToken);
+
+          // Verificar que sean el mismo token
+          if (res.token === savedToken) {
+            console.log('✅ Tokens coinciden - todo correcto');
+          } else {
+            console.error('❌ ERROR: Tokens no coinciden');
+            console.log('Token recibido:', res.token);
+            console.log('Token guardado:', savedToken);
           }
+
           this.message = '✅ Login exitoso';
-          this.router.navigate(['/dashboard']);
+
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1000);
         } else {
-          this.message = 'Respuesta inesperada del servidor';
+          this.message = '❌ No se recibió token del servidor';
         }
       },
       error: (err) => {
         this.loading = false;
+        console.error('Error completo en login:', err);
+
         this.message =
           err.error?.message ||
+          err.message ||
           (typeof err.error === 'string' ? err.error : 'Error al iniciar sesión');
-        console.error('Error en login:', err);
       },
     });
   }

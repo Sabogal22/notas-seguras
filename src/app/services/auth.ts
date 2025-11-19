@@ -8,29 +8,46 @@ import { Observable, tap, catchError, throwError } from 'rxjs';
 export class Auth {
   private apiUrl = 'http://localhost:8080/auth';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   register(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, data, { 
-      responseType: 'text' 
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post(`${this.apiUrl}/register`, data, {
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
   }
 
+  // En tu auth.service.ts - agrega este método
+  clearOldTokens(): void {
+    // Remover tokens viejos que puedan causar conflicto
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token'); // Por si acaso hay otro key
+    console.log('🧹 Tokens viejos limpiados');
+  }
+
+  // Y modifica el login para limpiar antes de guardar
   login(username: string, password: string): Observable<any> {
-    // Validar que los parámetros no sean undefined o null
     if (!username || !password) {
       return throwError(() => new Error('Username and password are required'));
     }
 
-    const params = `?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-    
+    // LIMPIAR TOKENS VIEJOS ANTES DEL LOGIN
+    this.clearOldTokens();
+
+    const params = `?username=${encodeURIComponent(username)}&password=${encodeURIComponent(
+      password
+    )}`;
+    console.log('URL de login:', `${this.apiUrl}/login${params}`);
+
     return this.http.post(`${this.apiUrl}/login${params}`, {}).pipe(
       tap((response: any) => {
-        console.log('Login response:', response);
+        console.log('✅ Respuesta del servidor:', response);
         if (response && response.token) {
           this.saveToken(response.token);
+          console.log('✅ Token guardado correctamente');
+        } else {
+          console.error('❌ No se recibió token en la respuesta');
         }
       }),
       catchError(this.handleError)
@@ -42,9 +59,9 @@ export class Auth {
       return throwError(() => new Error('No authentication token'));
     }
 
-    return this.http.get(`${this.apiUrl}/me`, this.getAuthHeaders()).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get(`${this.apiUrl}/me`, this.getAuthHeaders())
+      .pipe(catchError(this.handleError));
   }
 
   logout(): Observable<any> {
@@ -87,23 +104,23 @@ export class Auth {
   // Headers para requests autenticados
   getAuthHeaders() {
     const token = this.getToken();
-    
+
     if (!token) {
       throw new Error('No authentication token available');
     }
 
     return {
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      })
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }),
     };
   }
 
   // Manejo de errores
   private handleError(error: any) {
     console.error('Error en Auth Service:', error);
-    
+
     let errorMessage = 'Error desconocido';
     if (error.error instanceof ErrorEvent) {
       // Error del cliente
@@ -112,7 +129,7 @@ export class Auth {
       // Error del servidor
       errorMessage = `Error ${error.status}: ${error.error || error.message}`;
     }
-    
+
     return throwError(() => new Error(errorMessage));
   }
 }

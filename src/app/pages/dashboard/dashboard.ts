@@ -17,7 +17,13 @@ export class Dashboard {
   notesCount = 0;
   constructor(private router: Router, private auth: Auth) {}
   ngOnInit() {
-    const token = localStorage.getItem('token');
+    console.log('🔍 DEBUG LOCALSTORAGE:');
+    console.log('📍 localStorage length:', localStorage.length);
+    console.log('📍 Todas las keys:', Object.keys(localStorage));
+    console.log('📍 authToken value:', localStorage.getItem('auth_token'));
+    console.log('📍 token value:', localStorage.getItem('token'));
+
+    const token = localStorage.getItem('auth_token');
     console.log('TOKEN DESDE LOCALSTORAGE:', token);
     if (!token) {
       this.router.navigate(['/login']);
@@ -37,7 +43,9 @@ export class Dashboard {
     });
   }
   logout() {
+    localStorage.removeItem('auth_token');
     localStorage.removeItem('token');
+    sessionStorage.removeItem('auth_token');
     window.location.href = '/login';
   }
   getUserInitials(): string {
