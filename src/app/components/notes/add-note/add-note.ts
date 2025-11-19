@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-add-note',
@@ -13,19 +14,19 @@ import { Router } from '@angular/router';
 export class AddNote {
   note = {
     title: '',
-    content: ''
+    content: '',
   };
 
   isLoading = false;
   errorMessage = '';
   successMessage = '';
 
-  // Configuración de la API - ajusta según tu entorno
-  private apiUrl = 'http://localhost:8080/notes'; // Cambia por tu URL de Spring Boot
+  private apiUrl = 'http://localhost:8080/notes';
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private auth: Auth // Inyecta el servicio Auth
   ) {}
 
   // Para los contadores de caracteres
@@ -46,15 +47,10 @@ export class AddNote {
       return;
     }
 
-    if (this.note.title.length > 50) {
-      this.errorMessage = 'El título no puede tener más de 50 caracteres';
+    if (!this.auth.isAuthenticated()) {
+      this.errorMessage = 'Debes iniciar sesión para crear notas';
       this.clearMessagesAfterDelay();
-      return;
-    }
-
-    if (this.note.content.length > 500) {
-      this.errorMessage = 'El contenido no puede tener más de 500 caracteres';
-      this.clearMessagesAfterDelay();
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -62,30 +58,21 @@ export class AddNote {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Preparar los datos para enviar (sin createdAt ya que tu backend lo maneja)
     const noteData = {
       title: this.note.title.trim(),
-      content: this.note.content.trim()
+      content: this.note.content.trim(),
     };
 
-    // Configurar headers - importante incluir credentials para las sesiones
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      }),
-      withCredentials: true // Esto es crucial para enviar cookies de sesión
-    };
-
-    // Enviar a la API de Spring Boot
-    this.http.post(this.apiUrl, noteData, httpOptions).subscribe({
+    // Usar los headers del servicio Auth
+    this.http.post(this.apiUrl, noteData, this.auth.getAuthHeaders()).subscribe({
       next: (response: any) => {
         this.isLoading = false;
         this.successMessage = '¡Nota guardada exitosamente!';
-        
+
         // Limpiar el formulario
         this.onClear();
-        
-        // Opcional: redirigir a la lista de notas
+
+        // Redirigir a la lista de notas
         setTimeout(() => {
           this.router.navigate(['/notes']);
         }, 1500);
@@ -93,21 +80,22 @@ export class AddNote {
       error: (error) => {
         this.isLoading = false;
         console.error('Error al guardar la nota:', error);
-        
+
         this.handleError(error);
         this.clearMessagesAfterDelay();
-      }
+      },
     });
   }
 
-  // Manejo específico de errores según tu API
+  // Manejo específico de errores
   private handleError(error: any) {
     if (error.status === 0) {
-      this.errorMessage = 'No se pudo conectar con el servidor. Verifica que Spring Boot esté ejecutándose.';
+      this.errorMessage =
+        'No se pudo conectar con el servidor. Verifica que Spring Boot esté ejecutándose.';
     } else if (error.status === 401) {
-      this.errorMessage = 'No autenticado. Por favor, inicia sesión.';
-      // Redirigir al login después de un tiempo
+      this.errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
       setTimeout(() => {
+        this.auth.removeToken();
         this.router.navigate(['/login']);
       }, 2000);
     } else if (error.status === 403) {
@@ -149,9 +137,11 @@ export class AddNote {
 
   // Método para verificar si el formulario es válido
   isFormValid(): boolean {
-    return this.note.title.trim().length > 0 && 
-           this.note.content.trim().length > 0 &&
-           this.note.title.length <= 50 &&
-           this.note.content.length <= 500;
+    return (
+      this.note.title.trim().length > 0 &&
+      this.note.content.trim().length > 0 &&
+      this.note.title.length <= 50 &&
+      this.note.content.length <= 500
+    );
   }
 }

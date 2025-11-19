@@ -34,16 +34,22 @@ export class Login implements OnInit {
     this.loading = true;
     this.message = '';
 
-    const formData = new FormData();
-    formData.append('username', this.loginForm.value.username || '');
-    formData.append('password', this.loginForm.value.password || '');
+    // Obtener los valores del formulario
+    const username = this.loginForm.value.username;
+    const password = this.loginForm.value.password;
 
-    this.auth.login(formData).subscribe({
+    // CORRECCIÓN: Pasar los parámetros individualmente
+    this.auth.login(username, password).subscribe({
       next: (res: any) => {
         this.loading = false;
+        console.log('Respuesta del login:', res);
+        
         if (res.token) {
-          localStorage.setItem('token', res.token);
-          if (res.role) localStorage.setItem('role', String(res.role));
+          // Usar el método saveToken del servicio en lugar de localStorage directamente
+          this.auth.saveToken(res.token);
+          if (res.role) {
+            localStorage.setItem('role', String(res.role));
+          }
           this.message = '✅ Login exitoso';
           this.router.navigate(['/dashboard']);
         } else {
@@ -55,7 +61,7 @@ export class Login implements OnInit {
         this.message =
           err.error?.message ||
           (typeof err.error === 'string' ? err.error : 'Error al iniciar sesión');
-        console.error(err);
+        console.error('Error en login:', err);
       },
     });
   }
