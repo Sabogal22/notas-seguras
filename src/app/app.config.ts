@@ -9,6 +9,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     importProvidersFrom(ReactiveFormsModule),
-    provideHttpClient(withInterceptors([authInterceptor])), // 👈 habilita peticiones HTTP
+    provideHttpClient(withInterceptors([authInterceptor])), // habilita peticiones HTTP
   ],
 };
